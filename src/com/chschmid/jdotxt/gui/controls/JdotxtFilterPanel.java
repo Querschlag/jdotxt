@@ -65,6 +65,7 @@ public class JdotxtFilterPanel extends JPanel {
 	private ArrayList<String> filterProjects = new ArrayList<String>();
 	
 	private FilterSelectionListener projectsListener, contextsListener;
+	private ContextFilterSelectionListener contextsFilterListener;
 	
 	private ArrayList<FilterChangeListener> filterChangeListenerList = new ArrayList<FilterChangeListener>();
 	
@@ -82,6 +83,8 @@ public class JdotxtFilterPanel extends JPanel {
 		projects.setCellRenderer(new FilterCellRenderer());
 		projectsListener = new FilterSelectionListener(projects, filterProjects);
 		projects.addListSelectionListener(projectsListener);
+		contextsFilterListener = new ContextFilterSelectionListener();
+		contexts.addListSelectionListener(contextsFilterListener);
 		
 		contexts.setFont(JdotxtGUI.fontR);
 		contexts.setSelectionBackground(JdotxtGUI.COLOR_PRESSED);
@@ -196,7 +199,7 @@ public class JdotxtFilterPanel extends JPanel {
 		
 		ArrayList<String> myProjects = taskBag.getProjects(false);
 		ArrayList<String> myContexts = taskBag.getContexts(false);
-		
+
 		Util.prependString(myProjects, "+");
 		Util.prependString(myContexts, "@");
 		
@@ -238,6 +241,30 @@ public class JdotxtFilterPanel extends JPanel {
 		contexts.addListSelectionListener(contextsListener);
 	}
 	
+	private void updateProjectPane() {
+		List<String> selectedProjects = (List<String>) projects.getSelectedValuesList();
+		List<String> selectedContexts = (List<String>) contexts.getSelectedValuesList();
+		
+		ArrayList<String> myProjects = taskBag.getProjectsForSelectedContexts(selectedContexts);
+
+		Util.prependString(myProjects, "+");
+		
+		myProjects.add(0, JdotxtGUI.lang.getWord("Uncategorized"));
+		myProjects.add(0, JdotxtGUI.lang.getWord("All"));
+		
+		String[] projectsString = new String[myProjects.size()];
+		myProjects.toArray(projectsString);
+		
+		projects.setListData(projectsString);
+		
+		ArrayList<Integer> selectedProjectsIndices = new ArrayList<Integer>();
+		
+		for (int k1 = 0; k1 < projectsString.length; k1++) if (selectedProjects.contains(projectsString[k1])) selectedProjectsIndices.add(k1);
+		
+		if (selectedProjectsIndices.size() == 0) projects.setSelectedIndex(0);
+		else projects.setSelectedIndices(Util.integerList2IntArray(selectedProjectsIndices));
+	}
+	
 	private class FilterSelectionListener implements ListSelectionListener {
 		private List<String> filter;
 		private JList<String> list;
@@ -269,6 +296,18 @@ public class JdotxtFilterPanel extends JPanel {
 			fireFilterChange();
 		}
 	}
+	
+	private class ContextFilterSelectionListener implements ListSelectionListener {
+		
+		@Override
+		public void valueChanged(ListSelectionEvent event) {
+			if (!event.getValueIsAdjusting()) {
+				updateProjectPane();
+			}
+		}
+	}
+	
+	
 	
 	private class FilterCellRenderer extends DefaultListCellRenderer {
 		private static final long serialVersionUID = -7795431329110866824L;

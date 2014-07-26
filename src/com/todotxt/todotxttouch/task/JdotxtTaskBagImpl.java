@@ -254,6 +254,26 @@ class JdotxtTaskBagImpl implements TaskBag {
 		}
 		return ret;
 	}
+	
+	@Override
+	public ArrayList<String> getProjectsForSelectedContexts(List<String> selectedContexts) {
+		// TODO cache this after reloads?
+		Set<String> res = new HashSet<String>();
+		for (Task item : tasks) {
+			List<String>contexts = item.getContexts();
+			for (String context : contexts) {
+				for (String selectedContext : selectedContexts) {
+					String cleanSelectedContext = selectedContext.replace("@", "");
+					if (context.equals(cleanSelectedContext)) {
+						res.addAll(item.getProjects());
+					}
+				}
+			}
+		}
+		ArrayList<String> ret = new ArrayList<String>(res);
+		Collections.sort(ret);
+		return ret;
+	}
 
 	private static Task find(List<Task> tasks, Task task) {
 		Task partialMatch1 = null;

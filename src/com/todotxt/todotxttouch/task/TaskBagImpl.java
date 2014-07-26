@@ -283,6 +283,7 @@ class TaskBagImpl implements TaskBag {
 	@Override
 	public ArrayList<String> getProjects(boolean includeNone) {
 		// TODO cache this after reloads?
+		System.out.print("getProjects");
 		Set<String> res = new HashSet<String>();
 		for (Task item : tasks) {
 			res.addAll(item.getProjects());
@@ -292,6 +293,26 @@ class TaskBagImpl implements TaskBag {
 		if (includeNone) {
 			ret.add(0, "-");
 		}
+		return ret;
+	}
+	
+	@Override
+	public ArrayList<String> getProjectsForSelectedContexts(List<String> selectedContexts) {
+		// TODO cache this after reloads?
+		Set<String> res = new HashSet<String>();
+		for (Task item : tasks) {
+			List<String>contexts = item.getContexts();
+			for (String context : contexts) {
+				for (String selectedContext : selectedContexts) {
+					if (context == selectedContext) {
+						res.addAll(item.getProjects());
+						break;
+					}
+				}
+			}
+		}
+		ArrayList<String> ret = new ArrayList<String>(res);
+		Collections.sort(ret);
 		return ret;
 	}
 

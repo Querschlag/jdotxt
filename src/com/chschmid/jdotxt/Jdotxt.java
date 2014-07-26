@@ -57,7 +57,7 @@ public class Jdotxt {
 	public static void main( String[] args )
 	{
 		loadPreferences();
-		
+
 		// For detecting file changes to todo.txt, start thread, file will be specified later
 		try {
 			fileModifiedWatcher = new FileModifiedWatcher();
