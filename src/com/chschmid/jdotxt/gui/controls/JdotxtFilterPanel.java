@@ -37,6 +37,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import com.chschmid.jdotxt.Jdotxt;
 import com.chschmid.jdotxt.gui.JdotxtGUI;
 import com.todotxt.todotxttouch.task.TaskBag;
 import com.todotxt.todotxttouch.util.Util;
@@ -241,7 +242,13 @@ public class JdotxtFilterPanel extends JPanel {
 		contexts.addListSelectionListener(contextsListener);
 	}
 	
-	private void updateProjectPane() {
+	public void updateProjectPane() {
+		if (!Jdotxt.userPrefs.getBoolean("showProjectsBasedOnContext", false)) {
+			updateFilterPanes();
+			return;
+		}
+		
+		System.out.println("updating ProjectPane");
 		List<String> selectedProjects = (List<String>) projects.getSelectedValuesList();
 		List<String> selectedContexts = (List<String>) contexts.getSelectedValuesList();
 		

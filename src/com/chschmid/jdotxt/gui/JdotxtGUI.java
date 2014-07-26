@@ -342,6 +342,7 @@ public class JdotxtGUI extends JFrame {
 		taskList.setCopyProjectsContexts2NewTask(copyMetadata);
 		filterPanel.setVisible(calculateVisibility());
 		filterPanel.setSwitchPanels(Jdotxt.userPrefs.getBoolean("switchPanels", false));
+		filterPanel.updateProjectPane();
 		if (!currentPath.equals(newPath)) reloadTasks();
 		else if (currentCompactMode != newCompactMode) refreshGUI();
 		if (currentAutoSave != autoSave) {

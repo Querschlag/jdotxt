@@ -75,7 +75,7 @@ public class JdotxtPreferencesDialog extends JDialog {
 
 	// Settings controls
 	private JTextField directory;
-	private JCheckBox cbCompactMode, cbProjectsPanel, cbContextsPanel, cbSwitchPanels, cbPrependMetadata, cbCopyMetadata, cbAutosave;
+	private JCheckBox cbCompactMode, cbProjectsPanel, cbContextsPanel, cbSwitchPanels, cbShowProjectsBasedOnContext, cbPrependMetadata, cbCopyMetadata, cbAutosave;
 	private JLabel labelConflictResolution;
 	private JRadioButton crAsk, crLocal, crRemote;
 
@@ -365,6 +365,11 @@ public class JdotxtPreferencesDialog extends JDialog {
 		cbSwitchPanels.setText(JdotxtGUI.lang.getWord("Switch_filter_panels"));
 		cbSwitchPanels.setFont(JdotxtGUI.fontR);
 		cbSwitchPanels.setOpaque(false);
+		
+		cbShowProjectsBasedOnContext = new JCheckBox();
+		cbShowProjectsBasedOnContext.setText(JdotxtGUI.lang.getWord("Show_projects_based_on_context"));
+		cbShowProjectsBasedOnContext.setFont(JdotxtGUI.fontR);
+		cbShowProjectsBasedOnContext.setOpaque(false);
 
 		JLabel labelLanguage = new JLabel(JdotxtGUI.lang.getWord("Language"));
 		labelLanguage.setFont(JdotxtGUI.fontR);
@@ -380,6 +385,7 @@ public class JdotxtPreferencesDialog extends JDialog {
 		displayPanel.add(cbProjectsPanel);
 		displayPanel.add(cbContextsPanel);
 		displayPanel.add(cbSwitchPanels);
+		displayPanel.add(cbShowProjectsBasedOnContext);
 		// displayPanel.add(Box.createVerticalStrut(20));
 		// displayPanel.add(labelLanguage);
 		// displayPanel.add(Box.createVerticalStrut(10));
@@ -569,6 +575,7 @@ public class JdotxtPreferencesDialog extends JDialog {
 		Jdotxt.userPrefs.putBoolean("showProjectsPanel", cbProjectsPanel.isSelected());
 		Jdotxt.userPrefs.putBoolean("showContextsPanel", cbContextsPanel.isSelected());
 		Jdotxt.userPrefs.putBoolean("switchPanels", cbSwitchPanels.isSelected());
+		Jdotxt.userPrefs.putBoolean("showProjectsBasedOnContext", cbShowProjectsBasedOnContext.isSelected());
 		Jdotxt.userPrefs.putBoolean("autosave", cbAutosave.isSelected());
 	}
 
@@ -580,6 +587,7 @@ public class JdotxtPreferencesDialog extends JDialog {
 		cbProjectsPanel.setSelected(Jdotxt.userPrefs.getBoolean("showProjectsPanel", true));
 		cbContextsPanel.setSelected(Jdotxt.userPrefs.getBoolean("showContextsPanel", true));
 		cbSwitchPanels.setSelected(Jdotxt.userPrefs.getBoolean("switchPanels", false));
+		cbShowProjectsBasedOnContext.setSelected(Jdotxt.userPrefs.getBoolean("showProjectsBasedOnContext", false));
 		cbAutosave.setSelected(Jdotxt.userPrefs.getBoolean("autosave", false));
 		setEnableAutoSaveOptions(Jdotxt.userPrefs.getBoolean("autosave", false));
 	}
