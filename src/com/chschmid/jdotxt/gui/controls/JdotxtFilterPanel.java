@@ -1,5 +1,5 @@
 /**
-* Copyright (C) 2013-2014 Christian M. Schmid
+* Copyright (C) 2013-2015 Christian M. Schmid
 *
 * This file is part of the jdotxt.
 *
@@ -32,6 +32,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ListModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -205,10 +206,10 @@ public class JdotxtFilterPanel extends JPanel {
 		Util.prependString(myContexts, "@");
 		
 		myProjects.add(0, JdotxtGUI.lang.getWord("Uncategorized"));
-		myProjects.add(0, JdotxtGUI.lang.getWord("All"));
+		myProjects.add(0, JdotxtGUI.lang.getWord("All_projects"));
 		
 		myContexts.add(0, JdotxtGUI.lang.getWord("Uncategorized"));
-		myContexts.add(0, JdotxtGUI.lang.getWord("All"));
+		myContexts.add(0, JdotxtGUI.lang.getWord("All_contexts"));
 		
 		String[] projectsString = new String[myProjects.size()];
 		myProjects.toArray(projectsString);
@@ -292,7 +293,20 @@ public class JdotxtFilterPanel extends JPanel {
 			filter.clear();
 			List<String> selection = list.getSelectedValuesList();
 			
-			if (selection.contains(JdotxtGUI.lang.getWord("All"))) list.setSelectedIndex(0);
+			if (selection.contains(JdotxtGUI.lang.getWord("All"))
+				|| selection.contains(JdotxtGUI.lang.getWord("All_contexts"))
+				|| selection.contains(JdotxtGUI.lang.getWord("All_projects"))) {
+				if (selection.size() > 1) {
+					ListModel<String> all = list.getModel();
+					for (int k1 = 2; k1 < all.getSize(); k1++) {
+						if (!selection.contains(all.getElementAt(k1))) filter.add(all.getElementAt(k1).substring(1));
+					}
+					if (filter.size() == 0) {
+						if (!selection.contains(JdotxtGUI.lang.getWord("Uncategorized"))) filter.add("-");
+						else filter.add("98jLpz+LfAH4JQ_lQJb0x"); // Make sure that no item is found when all items + "All" is selected
+					}
+				}
+			}
 			else {
 				if (selection.contains(JdotxtGUI.lang.getWord("Uncategorized"))) {
 					filter.add("-");
@@ -325,7 +339,10 @@ public class JdotxtFilterPanel extends JPanel {
 	        c.setBorder(new EmptyBorder(4, 4, 4, 4));
 	        c.setOpaque(true);
 	        
-	        if (JdotxtGUI.lang.getWord("All").equals(value) || JdotxtGUI.lang.getWord("Uncategorized").equals(value)) {
+	        if (JdotxtGUI.lang.getWord("All").equals(value)
+	        	|| JdotxtGUI.lang.getWord("All_contexts").equals(value)
+	        	|| JdotxtGUI.lang.getWord("All_projects").equals(value)
+	        	|| JdotxtGUI.lang.getWord("Uncategorized").equals(value)) {
 	            c.setFont(JdotxtGUI.fontRI);
 	        } else {
 	        	c.setFont(JdotxtGUI.fontR);

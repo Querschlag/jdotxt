@@ -1,5 +1,5 @@
 /**
-* Copyright (C) 2013-2014 Christian M. Schmid
+* Copyright (C) 2013-2015 Christian M. Schmid
 *
 * This file is part of the jdotxt.
 *
@@ -32,6 +32,8 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
@@ -73,6 +75,9 @@ public class JdotxtGUI extends JFrame {
 	// Minimal and maximal window dimension settings
 	public static int MIN_WIDTH = 640;
 	public static int MIN_HEIGHT = 480;
+	
+	// Lines to scroll using the mouse wheel
+	public static int SCROLL_AMOUNT = 1;
 	
 	// Languages
 	public static final String[] languages = { "English" };
@@ -163,7 +168,13 @@ public class JdotxtGUI extends JFrame {
 		tasksPane.setViewportBorder(null);
 		tasksPane.getVerticalScrollBar().setBackground(Color.WHITE);
 		tasksPane.getVerticalScrollBar().setOpaque(true);
+		tasksPane.getVerticalScrollBar().putClientProperty("JScrollBar.fastWheelScrolling", false);
 		tasksPane.setViewportView(taskList);
+		tasksPane.getViewport().setBackground(Color.WHITE);
+		MyMouseWheelListener myMouseWheelListener = new MyMouseWheelListener(tasksPane.getMouseWheelListeners(), SCROLL_AMOUNT);
+		for (MouseWheelListener listener: tasksPane.getMouseWheelListeners()) tasksPane.removeMouseWheelListener(listener);
+		tasksPane.addMouseWheelListener(myMouseWheelListener);
+		
 		
 		// Add GUI elements to main window
 		this.add(toolbar, BorderLayout.PAGE_START);
@@ -208,7 +219,6 @@ public class JdotxtGUI extends JFrame {
                 	Jdotxt.userPrefs.putInt("width", JdotxtGUI.this.getWidth());
                 	Jdotxt.userPrefs.putInt("height", JdotxtGUI.this.getHeight());
                 	Jdotxt.userPrefs.putBoolean("isMaximized", (JdotxtGUI.this.getExtendedState() & JFrame.MAXIMIZED_BOTH) != 0);
-                	Jdotxt.userPrefs.putBoolean("firstRun", false);
                 	Jdotxt.userPrefs.put("version", Jdotxt.VERSION);
                     System.exit(0);
             	}
@@ -441,6 +451,7 @@ public class JdotxtGUI extends JFrame {
 	        	if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_F) toolbar.getTextfieldSearch().requestFocus(); // Jump to search bar
 	        	if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_N) {
 	        		toolbar.getTextfieldSearch().clearSearch();
+	        		tasksPane.getVerticalScrollBar().setValue(0);
 	        		taskList.requestFocusNewTask(); // New task
 	        	}
 	        }
@@ -525,6 +536,35 @@ public class JdotxtGUI extends JFrame {
 			JdotxtGUI.this.filterProjects = filterProjects;
 			JdotxtGUI.this.forwardFilter2TaskList();
 			setDefaultStatusText();
+		}
+	}
+	
+	// Modified MouseWheelListener to allow single line scrolling
+	public class MyMouseWheelListener implements MouseWheelListener {
+		private MouseWheelListener[] originalListeners;
+		private int scrollAmount = 0;
+		
+		public MyMouseWheelListener(MouseWheelListener[] originalListeners, int scrollAmount) {
+			this.originalListeners = originalListeners;
+			this.scrollAmount = scrollAmount;
+		}
+		
+		@Override
+		public void mouseWheelMoved(MouseWheelEvent originalEvent) {
+			MouseWheelEvent event = new MouseWheelEvent( originalEvent.getComponent(),
+					                                     originalEvent.getID(),
+					                                     originalEvent.getWhen(),
+					                                     originalEvent.getModifiers(),
+					                                     originalEvent.getX(),
+					                                     originalEvent.getY(),
+					                                     originalEvent.getXOnScreen(),
+					                                     originalEvent.getYOnScreen(),
+					                                     originalEvent.getClickCount(),
+					                                     originalEvent.isPopupTrigger(),
+					                                     originalEvent.getScrollType(),
+					                                     scrollAmount,
+					                                     originalEvent.getWheelRotation());
+			for (MouseWheelListener listener : originalListeners) listener.mouseWheelMoved(event);
 		}
 	}
 }
